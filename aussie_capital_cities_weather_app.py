@@ -20,13 +20,13 @@ app = ctk.CTk()
 app.title("Australian Capital Cities Weather App v3.0")
 app.geometry("600x700")
 # Welcome label
-ctk.CTkLabel(app, text="Welcome to Kean's Australian Capital Cities Weather App v3.0", font=("Arial", 20)).pack(pady=20)
+ctk.CTkLabel(app, text="Welcome to Kean's Australian Capital Cities Weather App v4.0", font=("Arial", 20)).pack(pady=20)
 
 #  3 Entry Box for typing the City
 
 city_entry = ctk.CTkEntry(app, width=450, height= 36, placeholder_text="Enter any capital city in Australia to get a glance at its weather forecast: ")
 city_entry.pack(pady=10)
-result_label = ctk.CTkLabel(app, text="", font=("Arial", 20))
+result_label = ctk.CTkLabel(app, text="", font=("Arial", 18))
 result_label.pack(pady=10)
 fig = plt.figure(figsize=(5, 4), dpi=100)
 ax = fig.add_subplot(111)
@@ -52,6 +52,7 @@ def city_submit():
     weather_info += "\n\n7 day forecast:\n"
     for day in range(7):
           weather_info += f"Day {day + 1}: Max Temp: {data['daily']['temperature_2m_max'][day]}°C, Min Temp: {data['daily']['temperature_2m_min'][day]}°C, Precipitation: {data['daily']['precipitation_sum'][day]} mm\n"
+
           
     result_label.configure(text=weather_info)
     
@@ -62,10 +63,25 @@ def city_submit():
     ax.set_xlabel('Hour of the Day')
     ax.set_xticks(range(0, 24, 2))
     canvas.get_tk_widget().pack(pady=30) 
-    
-
-    
     canvas.draw()
+    precip = data['current']['precipitation']
+    precipitation_daily = data['daily']['precipitation_sum'][0]
+    if float(precip) >= 0.2 or float(precipitation_daily) >= 2:
+        weather_info += f"\n\nUmbrella Recomended!"
+    else:
+        weather_info += f"\n\n No Umbrella Needed!"
+
+    temperature = data['current']['temperature_2m']
+    if float(temperature) <= 16:
+        weather_info += f"\n\n COLD weather.\n Wear a Jacket and some long pants!"
+
+    elif float(temperature) > 16 and float(temperature) <= 24:
+        weather_info += f"\n\n MODERATE weather. \n Wear a T-shirt and pants or a light jacket and shorts!"
+
+    elif float(temperature) > 24:
+        weather_info += f"\n\n HOT weather. \n Wear a T-shirt and shorts!"
+    result_label.configure(text=weather_info)
+
 
   else:
     weather_info = f"City '{inputacity}' not found. Please enter a valid Australian capital city."
