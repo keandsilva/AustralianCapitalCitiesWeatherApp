@@ -17,10 +17,11 @@ Cities_list = {'Sydney': {'lat': -33.87, 'long': 151.21}, 'Melbourne': {'lat': -
 ctk.set_appearance_mode("dark")
 ctk.set_window_scaling(1.5)
 app = ctk.CTk()
-app.title("Australian Capital Cities Weather App v3.0")
+app.title("Australian Capital Cities Weather App v4.1")
 app.geometry("600x700")
 # Welcome label
-ctk.CTkLabel(app, text="Welcome to Kean's Australian Capital Cities Weather App v4.0", font=("Arial", 20)).pack(pady=20)
+ctk.CTkLabel(app, text="Welcome to Kean's Australian Capital Cities Weather App v4.1 \n\n Type into the search bar the weather of any capital city you want to look at. ", font=("Arial", 20)).pack(pady=20)
+ctk.CTkLabel(app, text="If you want to exit the program, type 'exit'. ", font=("Arial", 14)).pack(pady=20)
 
 #  3 Entry Box for typing the City
 
@@ -67,9 +68,9 @@ def city_submit():
     precip = data['current']['precipitation']
     precipitation_daily = data['daily']['precipitation_sum'][0]
     if float(precip) >= 0.2 or float(precipitation_daily) >= 2:
-        weather_info += f"\n\nUmbrella Recomended!"
+        weather_info += f"\nUmbrella Recomended!"
     else:
-        weather_info += f"\n\n No Umbrella Needed!"
+        weather_info += f"\n No Umbrella Needed!"
 
     temperature = data['current']['temperature_2m']
     if float(temperature) <= 16:
@@ -82,6 +83,10 @@ def city_submit():
         weather_info += f"\n\n HOT weather. \n Wear a T-shirt and shorts!"
     result_label.configure(text=weather_info)
 
+  elif inputacity == "Exit":
+    app.destroy()
+    
+
 
   else:
     weather_info = f"City '{inputacity}' not found. Please enter a valid Australian capital city."
@@ -89,7 +94,7 @@ def city_submit():
   
     # 5 Button mapping to above function
 
-submit_button = ctk.CTkButton(app, width= 50, height=50, text="Submit", command=city_submit).pack(pady=10)
+submit_button = ctk.CTkButton(app, width= 50, height=50, text="Submit", command=city_submit).pack(padx=10)
 
 
 
