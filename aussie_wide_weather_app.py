@@ -1,11 +1,13 @@
 # Start up imports
-
+import sys
 import requests
 import matplotlib.pyplot as plt
 import customtkinter as ctk # type: ignore
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from io import BytesIO
 
+from PIL import Image
 
 
 
@@ -14,23 +16,50 @@ from matplotlib.figure import Figure
 ctk.set_appearance_mode("dark")
 ctk.set_window_scaling(1.5)
 app = ctk.CTk()
-app.title("Australian Wide Weather App v5.0")
-app.geometry("600x700")
+app.title("Australian Wide Weather App v6.0")
+app.geometry("750x500")
+scroll_container = ctk.CTkScrollableFrame(app, width=750, height=500)
+scroll_container.pack(fill="both", expand=True,)
+# Image banner for the app
+image_url = "https://img.magnific.com/free-photo/dramatic-storm-clouds-water-with-breaking-light_84443-85606.jpg?semt=ais_hybrid&w=740&q=80"
+image = requests.get(image_url)
+image_data = BytesIO(image.content)
+my_image = Image.open(image_data)
+
+ctk_img = ctk.CTkImage(light_image=my_image, dark_image=my_image, size=(1200, 240))
+image_label = ctk.CTkLabel(scroll_container, text="", image=ctk_img)
+image_label.pack( pady=10)
 # Welcome label
-ctk.CTkLabel(app, text="Welcome to Kean's Australia Wide Weather App v5.0 \n\n Type into the search bar the weather of any Australian suburb. ", font=("Arial", 20)).pack(pady=20)
-ctk.CTkLabel(app, text="If you want to exit the program, type 'exit'. ", font=("Arial", 14)).pack(pady=20)
+ctk.CTkLabel(scroll_container, text="Welcome to Kean's Australia Wide Weather App v6.0 \n\n Type into the search bar the weather of any Australian suburb. ", font=("Arial", 20)).pack(pady=20)
+ctk.CTkLabel(scroll_container, text="If you want to exit the program, type 'exit'. ", font=("Arial", 14)).pack(pady=20)
+input_frame = ctk.CTkFrame(scroll_container, fg_color="transparent")
+input_frame.pack(pady=10)
+
 
 #  Entry Box for typing the City
 
-city_entry = ctk.CTkEntry(app, width=450, height= 36, placeholder_text="Enter any suburb in Australia to get a glance at its weather forecast: ")
-city_entry.pack(pady=10)
+city_entry = ctk.CTkEntry(input_frame, width=450, height= 36, placeholder_text="Enter any suburb in Australia to get a glance at its weather forecast: ")
+city_entry.pack(pady=10, side="left", padx=10)
 
 # Setting up the result label and the matplotlib figure for plotting and displaying of weather data to user
-result_label = ctk.CTkLabel(app, text="", font=("Arial", 18))
+result_label = ctk.CTkLabel(scroll_container, text="", font=("Arial", 18))
 result_label.pack(pady=10)
-fig = plt.figure(figsize=(5, 3), dpi=100)
+fig = plt.figure(figsize=(5, 4), dpi=100)
 ax = fig.add_subplot(111)
-canvas = FigureCanvasTkAgg(fig, master=app)
+canvas = FigureCanvasTkAgg(fig, master=scroll_container)
+# Custom scroll function to make sure speed of scrolling is consistent across different desktop platforms
+def custom_scroll(event):
+    if sys.platform == "darwin":  # macOS trackpads/mice
+       
+        scroll_amount = int(-1 * (event.delta * 0.1)) 
+    else:  # Windows/Linux
+        
+        scroll_amount = int(-1 * (event.delta / 360))
+        
+    scroll_container._parent_canvas.yview_scroll(scroll_amount, "units")
+
+# 3. Bind it globally to the container
+scroll_container.bind_all("<MouseWheel>", custom_scroll)
 
 
 
@@ -109,7 +138,8 @@ def city_submit():
   
     # 5 Button mapping to above function
 
-submit_button = ctk.CTkButton(app, width= 75, height=40, text="Submit", command=city_submit).pack(padx=10)
+submit_button = ctk.CTkButton(input_frame, width= 75, height= 36, text="Submit", command=city_submit)
+submit_button.pack(side='right', padx=10)
 
 
 
